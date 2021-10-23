@@ -1,44 +1,71 @@
 <?php
 
+require_once(__DIR__.'/vendor/autoload.php');
+
 const SPA_URL = 'http://localhost:5500';
-const REDIRECT_URI = 'http://localhost:8000/?action=exchange_code_for_token';
 
-const AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
-const TOKEN_EXCHANGE_URL = 'https://oauth2.googleapis.com/token';
+const SIGN_IN_BUTTON_LOGIN_URI='http://localhost:8000/?action=sign_in_button_callback';
+const OAUTH_REDIRECT_URI = 'http://localhost:8000/?action=oauth_authorization_callback';
 
-const CLIENT_ID = '895562400824-eqfrnrj8php452e1lkfvok61gdu2mhai.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
-
-const SCOPE = 'openid email profile';
+const OAUTH_SCOPES = 'email profile https://www.googleapis.com/auth/classroom.coursework.me.readonly';
 
 $action = $_GET['action'] ?? null;
 
+configure_session_cookie();
 session_start();
 
 switch ($action) {
     case 'get_user_info':
+    case 'get_sign_in_button_info':
         handle_cors();
-        require_once(__DIR__.'/get_user_info.php');
-    break;
+    /* fallthrough */
 
-    case 'get_oauth_url':
-        handle_cors();
-        require_once(__DIR__.'/get_oauth_url.php');
-    break;
-
-    case 'exchange_code_for_token':
-        require_once(__DIR__.'/exchange_code_for_token.php');
+    case 'sign_in_button_callback':
+    case 'oauth_authorization_callback':
+        require_once(__DIR__.'/'.$action.'.php');
     break;
 }
 
 die;
 
-function set_content_type(string $contentType) {
-    header('Content-Type: '.$contentType);
+function configure_session_cookie() {
+    $cookieParams = session_get_cookie_params();
+    $cookieParams['httponly'] = true;
+    $cookieParams['secure'] = true;
+    $cookieParams['samesite'] = 'Lax';
+
+    session_set_cookie_params($cookieParams);
 }
 
 function handle_cors() {
     header('Access-Control-Allow-Origin: '.SPA_URL);
     header('Access-Control-Allow-Methods: GET');
     header('Access-Control-Allow-Credentials: true');
+}
+
+function set_content_type(string $contentType) {
+    header('Content-Type: '.$contentType);
+}
+
+function abort(int $reponseCode, ?string $message = null) {
+    http_response_code($reponseCode);
+
+    if ($message !== null) {
+        set_content_type('text/plain');
+        echo $message;
+    }
+
+    die;
+}
+
+function redirect_to(string $url) {
+    header('Location: '.$url);
+    die;
+}
+
+function make_google_client(): Google\Client {
+    $client = new Google\Client();
+    $client->setAuthConfig(__DIR__.'/google-client-secret.json');
+
+    return $client;
 }

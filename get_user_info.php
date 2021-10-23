@@ -2,14 +2,15 @@
 
 set_content_type('application/json');
 
-$serialized = $_SESSION['user'] ?? null;
+$userAuthorizedApp = $_SESSION['app_is_authorized'] ?? false;
+$serialized = $_SESSION['token'] ?? null;
 
-if ($serialized === null) {
+if (!$userAuthorizedApp || $serialized === null) {
     echo 'null';
     die;
 }
 
-$userInfo = unserialize($serialized);
+$token = unserialize($serialized);
 
-echo json_encode($userInfo);
+echo json_encode($token);
 die;
