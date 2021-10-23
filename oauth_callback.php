@@ -3,7 +3,7 @@
 $code = $_GET['code'] ?? die('OAuth authorization code not set');
 verify_state_param_or_die();
 
-$client = make_google_client();
+$client = make_google_client_with_client_id_secret_and_redirect_uri();
 
 $response = $client->fetchAccessTokenWithAuthCode($code);
 

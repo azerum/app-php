@@ -2,12 +2,10 @@
 
 set_content_type('text/plain');
 
-$client = make_google_client();
+$client = make_google_client_with_client_id_secret_and_redirect_uri();
 
 $client->setAccessType('online');
-
 $client->setScopes(OAUTH_SCOPES);
-$client->setRedirectUri(OAUTH_REDIRECT_URI);
 
 $state = generate_state();
 $client->setState($state);

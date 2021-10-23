@@ -49,9 +49,10 @@ function redirect_to(string $url) {
     die;
 }
 
-function make_google_client(): Google\Client {
+function make_google_client_with_client_id_secret_and_redirect_uri(): Google\Client {
     $client = new Google\Client();
     $client->setAuthConfig(__DIR__.'/google-client-secret.json');
+    $client->setRedirectUri(OAUTH_REDIRECT_URI);
 
     return $client;
 }
