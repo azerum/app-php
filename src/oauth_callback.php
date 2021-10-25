@@ -6,10 +6,13 @@ verify_state_param_or_die();
 $client = make_google_client_with_client_id_secret_and_redirect_uri();
 
 $response = $client->fetchAccessTokenWithAuthCode($code);
-
 Session::setAccessToken($response['access_token']);
 
 $oauth2 = new Google\Service\Oauth2($client);
+
+/**
+ * @var Google\Service\Oauth2\Userinfo
+ */
 $userInfo = $oauth2->userinfo_v2_me->get();
 
 Session::setUserInfo($userInfo);

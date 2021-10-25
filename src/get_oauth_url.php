@@ -5,7 +5,14 @@ set_content_type('text/plain');
 $client = make_google_client_with_client_id_secret_and_redirect_uri();
 
 $client->setAccessType('online');
-$client->setScopes(OAUTH_SCOPES);
+$client->setApprovalPrompt('auto');
+
+$client->setScopes([
+    'openid', 
+    'email', 
+    Google\Service\Classroom::CLASSROOM_COURSES_READONLY,
+    Google\Service\Classroom::CLASSROOM_COURSEWORK_ME_READONLY
+]);
 
 $state = generate_state();
 Session::setOAuthState($state);

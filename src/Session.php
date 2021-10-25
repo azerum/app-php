@@ -1,6 +1,6 @@
 <?php
 
-use Google\Service\Oauth2\Resource\Userinfo;
+use Google\Service\Oauth2\Userinfo;
 
 class Session 
 {
@@ -18,6 +18,11 @@ class Session
         }
 
         return unserialize($serialized);
+    }
+
+    public static function isUserInfoSet(): bool 
+    {
+        return isset($_SESSION['user_info']);
     }
 
     public static function setOAuthState(string $state) 
@@ -38,5 +43,15 @@ class Session
     public static function accessToken(): ?string
     {
         return $_SESSION['access_token'] ?? null;
+    }
+
+    public static function setRefreshToken(string $refreshToken)
+    {
+        $_SESSION['refresh_token'] = $refreshToken;
+    }
+
+    public static function refreshToken(): ?string
+    {
+        return $_SESSION['refresh_token'] ?? null;
     }
 }
