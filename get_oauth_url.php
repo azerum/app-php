@@ -8,6 +8,8 @@ $client->setAccessType('online');
 $client->setScopes(OAUTH_SCOPES);
 
 $state = generate_state();
+Session::setOAuthState($state);
+
 $client->setState($state);
 
 echo $client->createAuthUrl();
@@ -15,8 +17,5 @@ die;
 
 
 function generate_state(): string {
-    $state = bin2hex(random_bytes(16));
-    $_SESSION['state'] = $state;
-
-    return $state;
+    return bin2hex(random_bytes(16));
 }

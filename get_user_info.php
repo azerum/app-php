@@ -2,14 +2,7 @@
 
 set_content_type('application/json');
 
-$serialized = $_SESSION['user_info'] ?? null;
+$userInfo = Session::userInfo();
 
-if ($serialized === null) {
-    echo 'null';
-    die;
-}
-
-$user_info = unserialize($serialized);
-
-echo json_encode($user_info);
+echo json_encode($userInfo);
 die;

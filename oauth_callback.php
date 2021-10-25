@@ -7,17 +7,12 @@ $client = make_google_client_with_client_id_secret_and_redirect_uri();
 
 $response = $client->fetchAccessTokenWithAuthCode($code);
 
-if (isset($response['error'])) {
-    var_dump($response);
-    die;
-}
-
-$_SESSION['access_token'] = $response['access_token'];
+Session::setAccessToken($response['access_token']);
 
 $oauth2 = new Google\Service\Oauth2($client);
 $userInfo = $oauth2->userinfo_v2_me->get();
 
-$_SESSION['user_info'] = serialize($userInfo);
+Session::setUserInfo($userInfo);
 
 redirect_to(SPA_URL);
 die;
@@ -25,7 +20,7 @@ die;
 
 function verify_state_param_or_die() {
     $passedState = $_GET['state'] ?? null;
-    $sessionState = $_SESSION['state'] ?? null;
+    $sessionState = Session::oauthState();
 
     if (
         $passedState === null || $sessionState === null ||
